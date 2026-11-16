@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solix ($SLX) - Passerelle Multi-Fournisseurs Décentralisée</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solixBlue: {
+                            50: '#f0f6ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- En-tête / Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-md shadow-blue-500/20">
+                    S
+                </div>
+                <div>
+                    <span class="text-xl font-bold tracking-tight text-slate-900">SOLIX</span>
+                    <span class="block text-xs font-semibold text-blue-600 tracking-wider uppercase">Multi-Supplier Gateway • BNB Chain</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-2 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100 text-xs font-medium text-blue-700">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>BNB Chain Mainnet</span>
+                </div>
+                <button onclick="openWalletModal()" id="connectBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-xl shadow-lg shadow-blue-600/20 transition-all transform hover:-translate-y-0.5 text-sm flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <span id="connectText">Connecter Wallet</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Bandeau des cryptos acceptées -->
+    <section class="bg-white border-b border-slate-200 py-3 overflow-x-auto">
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between space-x-8 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <div class="flex items-center space-x-2 whitespace-nowrap">
+                <span>Actifs Acceptés (BNB Chain) :</span>
+            </div>
+            <div class="flex items-center space-x-6 whitespace-nowrap">
+                <div class="flex items-center space-x-1.5 text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">
+                    <span class="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-[10px]">S</span>
+                    <span>$SLX (0% Frais)</span>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                    <span class="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-[10px]">₮</span>
+                    <span>USDT</span>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                    <span class="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-[10px]">C</span>
+                    <span>USDC</span>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                    <span class="w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold text-[10px]">F</span>
+                    <span>FDUSD</span>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                    <span class="w-4 h-4 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-[10px]">₿</span>
+                    <span>BTC</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Corps Principal -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Colonne gauche : Sélection & Passerelle Multi-Fournisseurs -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-6">
+                
+                <h2 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                    <span>Routage de Commande & Fournisseurs</span>
+                </h2>
+
+                <!-- Sélecteur de Fournisseur Global -->
+                <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                    <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">Passerelle Fournisseur Logistique Active :</label>
+                    <select id="supplierSelect" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-blue-500">
+                        <option value="CJ">CJ Dropshipping (Global API - Automatisé)</option>
+                        <option value="ALIEXPRESS">AliExpress Official API (Global)</option>
+                        <option value="ZENDROP">Zendrop Fulfillment API</option>
+                        <option value="PRIVATE">Fournisseur Partenaire Privé / Local</option>
+                    </select>
+                    <p class="text-[11px] text-slate-500 mt-2">Le smart contract `SolixEscrow` transmettra automatiquement l'ordre d'exécution vers l'API du fournisseur sélectionné.</p>
+                </div>
+                
+                <!-- Articles de Démonstration -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="border-2 border-blue-500 bg-blue-50/40 rounded-xl p-4 cursor-pointer transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">Sélectionné</span>
+                            <span class="text-xs font-semibold text-slate-500">SKU: SOL-9823</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900">Smartwatch Ultra Series 9</h3>
+                        <p class="text-sm text-slate-600 mb-3">Routage dynamique multi-sources</p>
+                        <div class="text-lg font-extrabold text-blue-600">45.00 USD</div>
+                    </div>
+
+                    <div class="border border-slate-200 hover:border-slate-300 rounded-xl p-4 cursor-pointer transition-all bg-white">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded">Alternatif</span>
+                            <span class="text-xs font-semibold text-slate-500">SKU: SOL-4451</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900">Mini Projecteur Portable LED</h3>
+                        <p class="text-sm text-slate-600 mb-3">Routage dynamique multi-sources</p>
+                        <div class="text-lg font-extrabold text-slate-800">89.00 USD</div>
+                    </div>
+                </div>
+
+                <!-- Choix de la Devise de Paiement -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-700 mb-3">Sélectionnez votre devise de règlement (BNB Chain) :</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <button onclick="selectCurrency('SLX', 0)" id="curr-SLX" class="currency-card border-2 border-blue-600 bg-blue-50 p-3 rounded-xl text-left transition-all">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="w-6 h-6 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs">S</div>
+                                <span class="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-1.5 py-0.5 rounded">0% Frais</span>
+                            </div>
+                            <div class="font-bold text-slate-900 text-sm">$SLX</div>
+                            <div class="text-xs text-blue-600 font-medium">Solix Native</div>
+                        </button>
+
+                        <button onclick="selectCurrency('USDT', 1.5)" id="curr-USDT" class="currency-card border border-slate-200 bg-white p-3 rounded-xl text-left transition-all hover:border-slate-300">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="w-6 h-6 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center text-xs">₮</div>
+                                <span class="text-[10px] bg-slate-100 text-slate-600 font-medium px-1.5 py-0.5 rounded">1.5% Frais</span>
+                            </div>
+                            <div class="font-bold text-slate-900 text-sm">USDT</div>
+                            <div class="text-xs text-slate-500 font-medium">BEP-20</div>
+                        </button>
+
+                        <button onclick="selectCurrency('BTC', 1.5)" id="curr-BTC" class="currency-card border border-slate-200 bg-white p-3 rounded-xl text-left transition-all hover:border-slate-300">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="w-6 h-6 rounded-full bg-orange-500 text-white font-bold flex items-center justify-center text-xs">₿</div>
+                                <span class="text-[10px] bg-slate-100 text-slate-600 font-medium px-1.5 py-0.5 rounded">1.5% Frais</span>
+                            </div>
+                            <div class="font-bold text-slate-900 text-sm">BTC</div>
+                            <div class="text-xs text-slate-500 font-medium">Bitcoin</div>
+                        </button>
+
+                        <button onclick="selectCurrency('BNB', 1.5)" id="curr-BNB" class="currency-card border border-slate-200 bg-white p-3 rounded-xl text-left transition-all hover:border-slate-300">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="w-6 h-6 rounded-full bg-slate-900 text-white font-bold flex items-center justify-center text-xs">B</div>
+                                <span class="text-[10px] bg-slate-100 text-slate-600 font-medium px-1.5 py-0.5 rounded">1.5% Frais</span>
+                            </div>
+                            <div class="font-bold text-slate-900 text-sm">BNB</div>
+                            <div class="text-xs text-slate-500 font-medium">Natif</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Récapitulatif -->
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-2 text-sm">
+                    <div class="flex justify-between text-slate-600">
+                        <span>Montant commande :</span>
+                        <span class="font-semibold text-slate-900">45.00 $</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600">
+                        <span>Frais de passerelle (<span id="feePercentageLabel">0</span>%) :</span>
+                        <span class="font-semibold text-emerald-600" id="feeAmountLabel">0.00 $ (Économie 100%)</span>
+                    </div>
+                    <div class="border-t border-slate-200 pt-2 flex justify-between font-bold text-base text-slate-900">
+                        <span>Total à régler :</span>
+                        <span id="totalAmountLabel" class="text-blue-600">45.00 $SLX</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne droite : Résumé & Exécution Escrow -->
+        <div class="space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-900 mb-4">Statut SolixEscrow</h2>
+                
+                <div class="space-y-4 text-sm mb-6">
+                    <div class="flex items-center space-x-3 text-slate-600">
+                        <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">✓</div>
+                        <div>
+                            <p class="font-semibold text-slate-900">Smart Contract Vérifié</p>
+                            <p class="text-xs text-slate-500">Solidity v0.8.20 (BNB Chain)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 text-slate-600">
+                        <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold">⚡</div>
+                        <div>
+                            <p class="font-semibold text-slate-900">Routage Multi-Fournisseur</p>
+                            <p class="text-xs text-slate-500" id="supplierStatusText">Synchro active : CJ Dropshipping</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="executeEscrowPayment()" id="payBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-600/20 transition-all text-center">
+                    Verrouiller dans l'Escrow & Router
+                </button>
+
+                <div id="escrowStatusBox" class="hidden mt-4 p-4 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-800 space-y-2">
+                    <p class="font-bold flex items-center space-x-1">
+                        <span class="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span>
+                        <span>Fonds bloqués sous séquestre !</span>
+                    </p>
+                    <p id="routingSuccessText">Ordre transmis avec succès au fournisseur sélectionné.</p>
+                </div>
+            </div>
+
+            <!-- Solde du Portefeuille Connecté -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-900 mb-3 text-sm">Portefeuille Actif</h3>
+                <div id="walletInfo" class="text-xs text-slate-500 space-y-1">
+                    <p>Aucun portefeuille connecté.</p>
+                    <p class="text-[11px] text-slate-400">Cliquez sur "Connecter Wallet" en haut.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modale de Connexion Web3 -->
+    <div id="walletModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border border-slate-200 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-900">Connecter un Portefeuille</h3>
+                <button onclick="closeWalletModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xl">&times;</button>
+            </div>
+            <p class="text-xs text-slate-500">Choisissez votre portefeuille pour interagir avec le smart contract <strong>SolixEscrow</strong> sur la BNB Chain.</p>
+            
+            <div class="space-y-2 pt-2">
+                <button onclick="connectWallet('MetaMask')" class="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 transition-all font-medium text-sm text-slate-800">
+                    <span class="flex items-center space-x-3">
+                        <div class="w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center text-white font-bold text-xs">M</div>
+                        <span>MetaMask</span>
+                    </span>
+                    <span class="text-xs text-slate-400">Populaire</span>
+                </button>
+
+                <button onclick="connectWallet('Trust Wallet')" class="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 transition-all font-medium text-sm text-slate-800">
+                    <span class="flex items-center space-x-3">
+                        <div class="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xs">T</div>
+                        <span>Trust Wallet</span>
+                    </span>
+                    <span class="text-xs text-slate-400">Mobile & Web</span>
+                </button>
+
+                <button onclick="connectWallet('Binance Web3')" class="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 transition-all font-medium text-sm text-slate-800">
+                    <span class="flex items-center space-x-3">
+                        <div class="w-7 h-7 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-xs">B</div>
+                        <span>Binance Web3 Wallet</span>
+                    </span>
+                    <span class="text-xs text-slate-400">Recommandé</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script JavaScript interactif -->
+    <script>
+        let currentCurrency = 'SLX';
+        let currentFee = 0;
+        const baseAmount = 45.00;
+
+        document.getElementById('supplierSelect').addEventListener('change', function(e) {
+            const val = e.target.value;
+            let name = 'CJ Dropshipping';
+            if(val === 'ALIEXPRESS') name = 'AliExpress API';
+            if(val === 'ZENDROP') name = 'Zendrop Fulfillment';
+            if(val === 'PRIVATE') name = 'Fournisseur Privé/Local';
+            document.getElementById('supplierStatusText').innerText = 'Synchro active : ' + name;
+        });
+
+        function selectCurrency(currency, fee) {
+            currentCurrency = currency;
+            currentFee = fee;
+
+            document.querySelectorAll('.currency-card').forEach(card => {
+                card.classList.remove('border-blue-600', 'bg-blue-50/40');
+                card.classList.add('border-slate-200', 'bg-white');
+            });
+
+            const activeCard = document.getElementById('curr-' + currency);
+            if(activeCard) {
+                activeCard.classList.remove('border-slate-200', 'bg-white');
+                activeCard.classList.add('border-blue-600', 'bg-blue-50/40');
+            }
+
+            document.getElementById('feePercentageLabel').innerText = fee;
+            
+            if(fee === 0) {
+                document.getElementById('feeAmountLabel').innerHTML = '0.00 $ (Économie 100%)';
+                document.getElementById('totalAmountLabel').innerText = baseAmount.toFixed(2) + ' ' + currency;
+            } else {
+                const feeVal = (baseAmount * fee) / 100;
+                const totalVal = baseAmount + feeVal;
+                document.getElementById('feeAmountLabel').innerText = feeVal.toFixed(2) + ' $';
+                document.getElementById('totalAmountLabel').innerText = totalVal.toFixed(2) + ' ' + currency;
+            }
+        }
+
+        function openWalletModal() {
+            document.getElementById('walletModal').style.display = 'flex';
+        }
+
+        function closeWalletModal() {
+            document.getElementById('walletModal').style.display = 'none';
+        }
+
+        function connectWallet(walletName) {
+            closeWalletModal();
+            const btn = document.getElementById('connectBtn');
+            btn.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>0x71C...49a</span>`;
+            
+            const walletInfo = document.getElementById('walletInfo');
+            walletInfo.innerHTML = `
+                <p class="font-bold text-slate-800">Connecté via ${walletName}</p>
+                <p class="text-slate-600 font-mono text-[11px]">0x71C839...E49a</p>
+                <div class="mt-3 pt-2 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                    <div><strong>Solde SLX :</strong> 1,250.00</div>
+                    <div><strong>Solde USDT :</strong> 340.50</div>
+                </div>
+            `;
+        }
+
+        function executeEscrowPayment() {
+            const supplier = document.getElementById('supplierSelect').value;
+            const statusBox = document.getElementById('escrowStatusBox');
+            statusBox.classList.remove('hidden');
+            
+            document.getElementById('routingSuccessText').innerText = `Fonds sécurisés dans l'escrow. Ordre routé avec succès vers l'API de ${supplier}.`;
+
+            const payBtn = document.getElementById('payBtn');
+            payBtn.innerText = "Fonds sous séquestre (Routage actif)";
+            payBtn.disabled = true;
+            payBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    </script>
+</body>
+</html>
